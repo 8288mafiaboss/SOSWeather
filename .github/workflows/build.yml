@@ -1,0 +1,40 @@
+name: Build SOS Weather
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+    
+    - name: Create Xcode project
+      run: |
+        mkdir -p SOSWeather.xcodeproj
+        cat > SOSWeather.xcodeproj/project.pbxproj << 'EOF'
+        // Empty placeholder
+        EOF
+    
+    - name: Build app
+      run: |
+        xcodebuild \
+          -project SOSWeather.xcodeproj \
+          -scheme SOSWeather \
+          -configuration Release \
+          -destination 'platform=macOS' \
+          build
+    
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: SOS-Weather-App
+        path: build/Release/SOSWeather.app
