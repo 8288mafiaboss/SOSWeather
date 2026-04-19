@@ -1,4 +1,4 @@
-name: Build SOSWeather
+name: Build SOS Weather
 
 on:
   push:
@@ -17,9 +17,11 @@ jobs:
       with:
         xcode-version: latest-stable
 
-    - name: Create Xcode project structure
+    - name: Install xcodegen
+      run: brew install xcodegen
+
+    - name: Create project.yml
       run: |
-        brew install xcodegen
         cat > project.yml << 'EOF'
         name: SOSWeather
         options:
@@ -31,14 +33,20 @@ jobs:
             type: application
             platform: macOS
             sources:
-              - SOS Weather
+              - path: .
+                excludes:
+                  - "*.yml"
+                  - ".github/**"
+                  - "README.md"
             settings:
               base:
                 PRODUCT_BUNDLE_IDENTIFIER: com.sossoftware.sosweather
                 SWIFT_VERSION: 5.9
-                MACOSX_DEPLOYMENT_TARGET: 13.0
+                MACOSX_DEPLOYMENT_TARGET: "13.0"
         EOF
-        xcodegen generate
+
+    - name: Generate Xcode project
+      run: xcodegen generate
 
     - name: Build app
       run: |
@@ -52,7 +60,7 @@ jobs:
           CODE_SIGNING_ALLOWED=NO \
           build
 
-    - name: Upload build artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: SOS-Weather-App
