@@ -36,13 +36,16 @@ jobs:
               - path: .
                 excludes:
                   - "*.yml"
+                  - "*.md"
                   - ".github/**"
-                  - "README.md"
+                  - "project.yml"
             settings:
               base:
                 PRODUCT_BUNDLE_IDENTIFIER: com.sossoftware.sosweather
                 SWIFT_VERSION: 5.9
                 MACOSX_DEPLOYMENT_TARGET: "13.0"
+                INFOPLIST_FILE: Info.plist
+                GENERATE_INFOPLIST_FILE: NO
         EOF
 
     - name: Generate Xcode project
@@ -58,10 +61,15 @@ jobs:
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
+          INFOPLIST_FILE=Info.plist \
           build
+
+    - name: Copy app to output
+      run: |
+        cp -R ~/Library/Developer/Xcode/DerivedData/SOSWeather-*/Build/Products/Release/SOSWeather.app ./SOSWeather.app
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: SOS-Weather-App
-        path: ~/Library/Developer/Xcode/DerivedData/**/Build/Products/Release/SOSWeather.app
+        path: SOSWeather.app
