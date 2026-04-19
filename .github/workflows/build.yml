@@ -1,4 +1,4 @@
-name: Build SOS Weather
+name: Build SOSWeather
 
 on:
   push:
